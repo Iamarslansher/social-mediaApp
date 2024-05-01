@@ -1,0 +1,79 @@
+/* Login.module.css */
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.imageContainer {
+  flex: 1;
+}
+
+.formContainer {
+  flex: 1;
+  padding: 20px;
+  border-left: 1px solid #ccc;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+}
+
+.formContainer h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="password"],
+button {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+button {
+  background-color: #3897f0;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2874f0;
+}
+
+p {
+  text-align: right;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.separator span {
+  flex: 1;
+  height: 1px;
+  background-color: #ccc;
+  margin: 0 10px;
+}
+
+.createAccount {
+  width: 100%;
+  background-color: transparent;
+  color: #3897f0;
+  border: 1px solid #3897f0;
+}
+
+.createAccount:hover {
+  background-color: #3897f0;
+  color: white;
+}

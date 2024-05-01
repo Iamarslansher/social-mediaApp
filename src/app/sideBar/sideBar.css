@@ -1,0 +1,46 @@
+/* Sidebar.module.css */
+
+.sidebar {
+  background-color: #fafafa;
+  width: 200px;
+  height: 86%;
+  padding: 20px;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  bottom: 0;
+}
+
+.sidebarList {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+}
+
+.sidebarList li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.sidebarList li span {
+  margin-left: 10px;
+  font-size: 16px;
+}
+
+.sidebarList li svg {
+  width: 24px;
+  height: 24px;
+  color: #333;
+  margin-right: 10px;
+}
+
+.custom {
+  text-decoration: none;
+  color: black;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+}
