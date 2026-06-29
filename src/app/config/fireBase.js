@@ -16,6 +16,13 @@ import {
   setDoc,
   doc,
   updateDoc,
+  getDoc,
+  deleteDoc,
+  onSnapshot,
+  query,
+  where,
+  orderBy,
+  serverTimestamp,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -43,14 +50,63 @@ export const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 export const facebook = new FacebookAuthProvider();
+
+const fallbackAvatar =
+  "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80";
+
+const mapSnapshot = (snapshot) =>
+  snapshot.docs.map((document) => ({ id: document.id, ...document.data() }));
+
+const getCurrentUserProfile = async () => {
+  const currentUser = auth.currentUser;
+  if (!currentUser) return null;
+  const userRef = doc(db, "users", currentUser.uid);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    return { id: userSnap.id, ...userSnap.data() };
+  }
+  const profile = {
+    uid: currentUser.uid,
+    name: currentUser.displayName || currentUser.email?.split("@")[0] || "Luma Creator",
+    email: currentUser.email || "",
+    photo: currentUser.photoURL || fallbackAvatar,
+    bio: "Building a luminous social presence.",
+    skills: ["Design", "Community", "Storytelling"],
+    interests: ["Photography", "Creative tech", "Culture"],
+    followers: [],
+    following: [],
+    friends: [],
+    online: true,
+    lastActive: serverTimestamp(),
+    createdAt: serverTimestamp(),
+  };
+  await setDoc(userRef, profile, { merge: true });
+  return { id: currentUser.uid, ...profile };
+};
 //  SINGN_UP
 
 export async function signUp(userInfo) {
   console.log(userInfo, "USerINFO");
   const { name, email, password } = userInfo;
   try {
-    await createUserWithEmailAndPassword(auth, email, password);
+    const credentials = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, "users", credentials.user.uid), {
+      uid: credentials.user.uid,
+      name,
+      email,
+      photo: fallbackAvatar,
+      bio: "New to Luma and ready to share.",
+      skills: ["Creator"],
+      interests: ["Social", "Photography"],
+      followers: [],
+      following: [],
+      friends: [],
+      online: true,
+      lastActive: serverTimestamp(),
+      createdAt: serverTimestamp(),
+    });
     await addDoc(collection(db, "user"), {
+      uid: credentials.user.uid,
       name,
       email,
     });
@@ -64,7 +120,7 @@ export async function signUp(userInfo) {
 export async function logIn(userInfo) {
   const { email, password } = userInfo;
   try {
-    await signInWithEmailAndPassword, (auth, email, password);
+    await signInWithEmailAndPassword(auth, email, password);
     alert("Log In Success");
   } catch (error) {
     alert(error.message);
@@ -76,6 +132,25 @@ export const loginWithFacebook = async (provider) => {
   console.log(provider);
   try {
     const result = await signInWithPopup(auth, facebook);
+    await setDoc(
+      doc(db, "users", result.user.uid),
+      {
+        uid: result.user.uid,
+        name: result.user.displayName,
+        email: result.user.email,
+        photo: result.user.photoURL || fallbackAvatar,
+        bio: "Creating, connecting, and sharing in Luma.",
+        skills: ["Creator"],
+        interests: ["Community"],
+        followers: [],
+        following: [],
+        friends: [],
+        online: true,
+        lastActive: serverTimestamp(),
+        createdAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
     await addDoc(collection(db, "facebookloginuser"), {
       name: result.user.displayName,
       email: result.user.email,
@@ -91,6 +166,12 @@ export const loginWithFacebook = async (provider) => {
 //Function to logout user
 export const logout = async () => {
   try {
+    if (auth.currentUser) {
+      await updateDoc(doc(db, "users", auth.currentUser.uid), {
+        online: false,
+        lastActive: serverTimestamp(),
+      });
+    }
     await signOut(auth);
   } catch (e) {
     console.log(e);
@@ -100,13 +181,29 @@ export const logout = async () => {
 // Add-Post in firebase
 export async function userCardItem(itemInfo) {
   try {
-    const { img, des } = itemInfo;
-    const storageRef = ref(storage, `images/${img.name}`);
-    await uploadBytes(storageRef, img);
-    const imgUrl = await getDownloadURL(storageRef);
+    const { files = [], des, privacy = "Public", richText = "" } = itemInfo;
+    const currentUser = await getCurrentUserProfile();
+    const uploads = await Promise.all(
+      files.map(async (file) => {
+        const storageRef = ref(storage, `posts/${Date.now()}-${file.name}`);
+        await uploadBytes(storageRef, file);
+        return {
+          url: await getDownloadURL(storageRef),
+          type: file.type.startsWith("video") ? "video" : "image",
+          name: file.name,
+        };
+      })
+    );
     await addDoc(collection(db, "userItem"), {
       description: des,
-      image: imgUrl,
+      richText,
+      privacy,
+      media: uploads,
+      image: uploads[0]?.url || "",
+      authorId: currentUser?.uid || auth.currentUser?.uid || "",
+      authorName: currentUser?.name || "Luma Creator",
+      authorPhoto: currentUser?.photo || fallbackAvatar,
+      createdAt: serverTimestamp(),
     });
     alert("Post successfully!");
   } catch (e) {
@@ -132,12 +229,29 @@ export async function getingAds() {
 export async function updateprofile(itemInfo) {
   console.log(itemInfo);
   try {
-    const { updateProfile } = itemInfo;
-    const storageRef = ref(storage, `profile/${updateProfile.name}`);
-    await uploadBytes(storageRef, updateProfile);
-    const imgUrl = await getDownloadURL(storageRef);
+    const { updateProfile, bio, skills = [], interests = [] } = itemInfo;
+    let imgUrl = "";
+    if (updateProfile?.name) {
+      const storageRef = ref(storage, `profile/${updateProfile.name}`);
+      await uploadBytes(storageRef, updateProfile);
+      imgUrl = await getDownloadURL(storageRef);
+    }
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      await setDoc(
+        doc(db, "users", currentUser.uid),
+        {
+          photo: imgUrl || currentUser.photoURL || fallbackAvatar,
+          bio,
+          skills,
+          interests,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+    }
     await addDoc(collection(db, "profile"), {
-      image: imgUrl,
+      image: imgUrl || fallbackAvatar,
     });
     alert("Update Profile successfully!");
   } catch (e) {
@@ -168,4 +282,171 @@ export async function getFacebookProfile() {
     allData.push(data);
   });
   return allData;
+}
+
+export async function getCurrentProfile() {
+  return getCurrentUserProfile();
+}
+
+export function listenUsers(callback) {
+  return onSnapshot(collection(db, "users"), (snapshot) => {
+    callback(mapSnapshot(snapshot));
+  });
+}
+
+export function listenPosts(callback) {
+  const postsQuery = query(collection(db, "userItem"), orderBy("createdAt", "desc"));
+  return onSnapshot(postsQuery, (snapshot) => callback(mapSnapshot(snapshot)));
+}
+
+export async function updatePresence(online = true) {
+  if (!auth.currentUser) return;
+  await setDoc(
+    doc(db, "users", auth.currentUser.uid),
+    { online, lastActive: serverTimestamp() },
+    { merge: true }
+  );
+}
+
+export async function followUser(targetUser) {
+  const currentUser = await getCurrentUserProfile();
+  if (!currentUser || currentUser.uid === targetUser.uid) return;
+  const following = Array.from(new Set([...(currentUser.following || []), targetUser.uid]));
+  await setDoc(doc(db, "users", currentUser.uid), { following }, { merge: true });
+  const targetRef = doc(db, "users", targetUser.uid);
+  const targetSnap = await getDoc(targetRef);
+  const target = targetSnap.data() || {};
+  const followers = Array.from(new Set([...(target.followers || []), currentUser.uid]));
+  await setDoc(targetRef, { followers }, { merge: true });
+  await createNotification(targetUser.uid, {
+    type: "follow",
+    title: "New follower",
+    body: `${currentUser.name} started following you.`,
+  });
+}
+
+export async function unfollowUser(targetUser) {
+  const currentUser = await getCurrentUserProfile();
+  if (!currentUser) return;
+  await setDoc(
+    doc(db, "users", currentUser.uid),
+    { following: (currentUser.following || []).filter((uid) => uid !== targetUser.uid) },
+    { merge: true }
+  );
+}
+
+export async function sendFriendRequest(targetUser) {
+  const currentUser = await getCurrentUserProfile();
+  if (!currentUser || currentUser.uid === targetUser.uid) return;
+  const requestId = [currentUser.uid, targetUser.uid].sort().join("_");
+  await setDoc(doc(db, "friendRequests", requestId), {
+    from: currentUser.uid,
+    fromName: currentUser.name,
+    fromPhoto: currentUser.photo || fallbackAvatar,
+    to: targetUser.uid,
+    toName: targetUser.name,
+    status: "pending",
+    createdAt: serverTimestamp(),
+  });
+  await createNotification(targetUser.uid, {
+    type: "friend-request",
+    title: "Friend request",
+    body: `${currentUser.name} sent you a friend request.`,
+  });
+}
+
+export function listenFriendRequests(callback) {
+  if (!auth.currentUser) return () => {};
+  const requestsQuery = query(
+    collection(db, "friendRequests"),
+    where("to", "==", auth.currentUser.uid),
+    where("status", "==", "pending")
+  );
+  return onSnapshot(requestsQuery, (snapshot) => callback(mapSnapshot(snapshot)));
+}
+
+export async function respondFriendRequest(request, accepted) {
+  const requestRef = doc(db, "friendRequests", request.id);
+  await updateDoc(requestRef, { status: accepted ? "accepted" : "rejected" });
+  if (!accepted) return;
+  const currentUser = await getCurrentUserProfile();
+  const requesterRef = doc(db, "users", request.from);
+  const requesterSnap = await getDoc(requesterRef);
+  const requester = requesterSnap.data() || {};
+  await setDoc(
+    doc(db, "users", currentUser.uid),
+    { friends: Array.from(new Set([...(currentUser.friends || []), request.from])) },
+    { merge: true }
+  );
+  await setDoc(
+    requesterRef,
+    { friends: Array.from(new Set([...(requester.friends || []), currentUser.uid])) },
+    { merge: true }
+  );
+  await createNotification(request.from, {
+    type: "friend-accepted",
+    title: "Friend request accepted",
+    body: `${currentUser.name} accepted your request.`,
+  });
+}
+
+export function listenNotifications(callback) {
+  if (!auth.currentUser) return () => {};
+  const notificationsQuery = query(
+    collection(db, "notifications"),
+    where("to", "==", auth.currentUser.uid),
+    orderBy("createdAt", "desc")
+  );
+  return onSnapshot(notificationsQuery, (snapshot) => callback(mapSnapshot(snapshot)));
+}
+
+export async function createNotification(to, payload) {
+  await addDoc(collection(db, "notifications"), {
+    to,
+    read: false,
+    createdAt: serverTimestamp(),
+    ...payload,
+  });
+}
+
+const conversationIdFor = (a, b) => [a, b].sort().join("_");
+
+export function listenMessages(otherUserId, callback) {
+  if (!auth.currentUser || !otherUserId) return () => {};
+  const conversationId = conversationIdFor(auth.currentUser.uid, otherUserId);
+  const messagesQuery = query(
+    collection(db, "conversations", conversationId, "messages"),
+    orderBy("createdAt", "asc")
+  );
+  return onSnapshot(messagesQuery, (snapshot) => callback(mapSnapshot(snapshot)));
+}
+
+export async function sendMessage(otherUser, text) {
+  const currentUser = await getCurrentUserProfile();
+  if (!currentUser || !text.trim()) return;
+  const conversationId = conversationIdFor(currentUser.uid, otherUser.uid);
+  await setDoc(
+    doc(db, "conversations", conversationId),
+    {
+      participants: [currentUser.uid, otherUser.uid],
+      lastMessage: text.trim(),
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+  await addDoc(collection(db, "conversations", conversationId, "messages"), {
+    from: currentUser.uid,
+    to: otherUser.uid,
+    text: text.trim(),
+    createdAt: serverTimestamp(),
+  });
+  await createNotification(otherUser.uid, {
+    type: "message",
+    title: "New message",
+    body: `${currentUser.name}: ${text.trim().slice(0, 80)}`,
+  });
+}
+
+export async function removeNotification(id) {
+  await deleteDoc(doc(db, "notifications", id));
 }

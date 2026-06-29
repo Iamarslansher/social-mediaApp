@@ -3,9 +3,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { logIn, loginWithFacebook } from "../config/fireBase";
 import { useRouter } from "next/navigation";
-import "./login.css";
-
 import { FaFacebook } from "react-icons/fa";
+import { FiArrowRight, FiLock, FiRadio } from "react-icons/fi";
 
 function Login() {
   const router = useRouter();
@@ -36,80 +35,73 @@ function Login() {
   };
 
   return (
-    <div>
-      <div className="container">
-        <div className="imageContainer">
-          <img
-            src="https://img.freepik.com/free-vector/access-control-system-abstract-concept_335657-3180.jpg"
-            alt="Instagram"
-            className="image"
-          />
+    <main className="auth-page premium-page">
+      <section className="auth-shell glass-panel">
+        <div className="auth-visual">
+          <span className="auth-kicker">
+            <FiRadio /> Live communities
+          </span>
+          <div>
+            <h1>
+              Step back into your{" "}
+              <span className="gradient-text">creative orbit</span>.
+            </h1>
+            <p>
+              Catch up on fresh posts, private threads, creator drops, and the
+              people who make your feed feel alive.
+            </p>
+          </div>
+          <div className="auth-metrics">
+            <div className="metric">
+              <strong>18</strong>
+              <span>new stories</span>
+            </div>
+            <div className="metric">
+              <strong>7</strong>
+              <span>active rooms</span>
+            </div>
+            <div className="metric">
+              <strong>3m</strong>
+              <span>avg reply</span>
+            </div>
+          </div>
         </div>
-        <div className="formContainer">
-          <h2>Welcome back to Instagram</h2>
-
-          <form>
+        <div className="auth-card">
+          <div className="brand-mark">L</div>
+          <h2>Welcome back</h2>
+          <p>Log in to your Luma account and continue the conversation.</p>
+          <form className="auth-form">
             <input
-              type="text"
-              placeholder="Username or Email"
+              type="email"
+              placeholder="Email address"
+              className="field"
               onChange={(e) => setEmail(e.target.value)}
             />
             <input
               type="password"
               placeholder="Password"
+              className="field"
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            <button onClick={loginFunc} className="btn">
-              Log in
+            <button onClick={loginFunc} className="primary-button">
+              Log in <FiArrowRight />
             </button>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: "10px",
-                marginBottom: "10px",
-                fontSize: "20px",
-                border: "1px solid lightgray",
-                padding: "10px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                background: "lightblue",
-              }}
+            <div className="divider">or</div>
+            <button
+              type="button"
+              onClick={faceBookLogin}
+              className="secondary-button"
             >
-              Login with <FaFacebook onClick={faceBookLogin} />
-            </div>
+              <FaFacebook /> Continue with Facebook
+            </button>
           </form>
-          <p>Forgot password?</p>
-          <div className="separator">
-            <span
-              style={{
-                color: "black",
-                fontWeight: "600",
-                fontSize: "20px",
-                textDecoration: "none",
-                textAlign: "center",
-              }}
-            >
-              OR
-            </span>
-          </div>
-          <button className="createAccount">
-            <Link
-              style={{
-                textDecoration: "none",
-                color: "black",
-                fontWeight: "600",
-              }}
-              href="/signup"
-            >
-              Create New Account
-            </Link>
-          </button>
+          <p className="auth-switch">
+            <FiLock /> New here? <Link href="/signup">Create an account</Link>
+          </p>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 

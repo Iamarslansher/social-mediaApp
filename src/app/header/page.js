@@ -1,52 +1,25 @@
 import React from "react";
-import "./header.css";
-
-import { IoMdHome } from "react-icons/io";
-import { FaUserAlt } from "react-icons/fa";
-import { IoMdMenu } from "react-icons/io";
-import { IoSettings } from "react-icons/io5";
+import { FiBell, FiCompass, FiMessageCircle, FiSearch } from "react-icons/fi";
 
 function Header() {
   return (
-    <nav className="navbar">
-      <div className="menu">
-        <ul className="list">
-          <li className="item ">
-            <a href="#">
-              <span className="icon">
-                <IoMdHome />
-              </span>
-              <span className="text">Home</span>
-            </a>
-          </li>
-          <li className="item">
-            <a href="#">
-              <span className="icon">
-                <FaUserAlt />
-              </span>
-              <span className="text">About</span>
-            </a>
-          </li>
-          <li className="item">
-            <a href="#">
-              <span className="icon">
-                <IoMdMenu />
-              </span>
-              <span className="text">Menu</span>
-            </a>
-          </li>
-          <li className="item">
-            <a href="#">
-              <span className="icon set">
-                <IoSettings />
-              </span>
-              <span className="text">Setting</span>
-            </a>
-          </li>
-          <div className="ind" />
-        </ul>
+    <header className="topbar glass-panel">
+      <div className="search-box">
+        <FiSearch />
+        <input className="field" placeholder="Search creators, sparks, rooms" />
       </div>
-    </nav>
+      <nav className="nav-pills" aria-label="Quick filters">
+        <button className="ghost-button">
+          <FiCompass /> Discover
+        </button>
+        <button className="ghost-button">
+          <FiMessageCircle /> Rooms
+        </button>
+      </nav>
+      <button className="icon-button" aria-label="Open notifications">
+        <FiBell />
+      </button>
+    </header>
   );
 }
 

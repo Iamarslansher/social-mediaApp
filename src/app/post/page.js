@@ -1,12 +1,10 @@
 // PostCard.js
 "use client";
 import React, { useState, useEffect } from "react";
-import { getingAds, getFacebookProfile, getProfile } from "../config/fireBase";
-import "./post.css";
+import { getFacebookProfile, getProfile, listenPosts } from "../config/fireBase";
+import { motion } from "framer-motion";
 
-import { AiFillLike } from "react-icons/ai";
-import { FaCommentDots } from "react-icons/fa";
-import { TbLocationShare } from "react-icons/tb";
+import { FiHeart, FiMessageCircle, FiMoreHorizontal, FiSend } from "react-icons/fi";
 
 const PostCard = () => {
   const [posts, setosts] = useState([]);
@@ -14,16 +12,11 @@ const PostCard = () => {
   const [localProfile, setLocalProfile] = useState("");
 
   useEffect(() => {
-    getPosts();
     getPrfile();
     LocalProfile();
+    const unsubscribe = listenPosts(setosts);
+    return () => unsubscribe();
   }, []);
-
-  const getPosts = async () => {
-    const getPost = await getingAds();
-    setosts(getPost);
-    console.log(getPost);
-  };
 
   const getPrfile = async () => {
     const pfile = await getFacebookProfile();
@@ -38,68 +31,84 @@ const PostCard = () => {
   return (
     <>
       {!posts.length ? (
-        <h2
-          style={{
-            textAlign: "center",
-            marginTop: "100px",
-            fontSize: "30px",
-          }}
-        >
-          Create Post
-        </h2>
+        <div className="skeleton-stack glass-panel">
+          <div className="skeleton" style={{ width: "42%", height: 18 }} />
+          <div className="skeleton" style={{ height: 320, borderRadius: 24 }} />
+          <div className="skeleton" style={{ width: "76%" }} />
+          <div className="feed-empty">
+            <h2>Ready for your first spark?</h2>
+            <p className="rail-muted">
+              Create a post to turn this feed into a living timeline.
+            </p>
+            <a className="primary-button" href="/addPost">Create post</a>
+          </div>
+        </div>
       ) : (
-        posts.map((post) => {
+        posts.map((post, index) => {
           return (
-            <div className="container">
-              <div className="card">
-                <div className="CardHeader">
-                  {!profile ? (
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        borderRadius: "50%",
-                        margin: "10px",
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src={localProfile[0]?.image}
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        borderRadius: "50%",
-                        margin: "10px",
-                      }}
-                    />
-                  )}
-
-                  {!profile ? <h3>Arslan</h3> : <h3>{profile[0]?.name}</h3>}
-                </div>
-                <div className="card-body">
-                  <div className="cardImg">
-                    <img
-                      className="card-img-top"
-                      src={!post.image ? "no image Upload" : post.image}
-                      alt="..."
-                    />
-                  </div>
-
-                  <p className="card-text">
-                    {!post.description ? "No Descript" : post.description}
-                  </p>
-                  <hr />
-                  <div className="actionDiv">
-                    <AiFillLike title="Like" className="action" />
-                    |
-                    <FaCommentDots title="comment" className="action" />
-                    |
-                    <TbLocationShare title="share" className="action" />
+            <motion.article
+              className="post-card glass-panel"
+              key={post.id || index}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.18) }}
+            >
+              <div className="post-header">
+                <div className="post-author">
+                  <img
+                    className="avatar"
+                    src={
+                      post.authorPhoto ||
+                      localProfile[0]?.image ||
+                      profile[0]?.photo ||
+                      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80"
+                    }
+                    alt="Post author"
+                  />
+                  <div>
+                    <strong>{post.authorName || profile[0]?.name || "Luma Creator"}</strong>
+                    <span>{post.privacy || "Public"} spark</span>
                   </div>
                 </div>
+                <button className="icon-button" aria-label="More post options">
+                  <FiMoreHorizontal />
+                </button>
               </div>
-            </div>
+              <div className="post-media">
+                {post.media?.[0]?.type === "video" ? (
+                  <video controls src={post.media[0].url} />
+                ) : (
+                  <img
+                    src={
+                      post.image ||
+                      post.media?.[0]?.url ||
+                      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80"
+                    }
+                    alt={post.description || "Shared post"}
+                  />
+                )}
+              </div>
+              {post.media?.length > 1 && (
+                <div className="media-count">+{post.media.length - 1} more</div>
+              )}
+              <p className="post-copy">
+                {post.description || "A quiet moment from the creator feed."}
+              </p>
+              <div className="post-actions">
+                <div className="action-group">
+                  <button className="reaction-button">
+                    <FiHeart /> Like
+                  </button>
+                  <button className="reaction-button">
+                    <FiMessageCircle /> Comment
+                  </button>
+                  <button className="reaction-button">
+                    <FiSend /> Share
+                  </button>
+                </div>
+                <span className="post-meta">{128 + index * 17} reactions</span>
+              </div>
+            </motion.article>
           );
         })
       )}

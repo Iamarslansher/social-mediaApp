@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { signUp } from "../config/fireBase";
 import { useRouter } from "next/navigation";
-import "./signUp.css";
+import { FiArrowRight, FiShield, FiZap } from "react-icons/fi";
 
 function Signup() {
   const router = useRouter();
@@ -27,54 +27,73 @@ function Signup() {
   };
 
   return (
-    <div>
-      <div className="container">
-        <div className="content">
-          <div className="imageContainer">
-            <img
-              src="https://airproductionservice.com/wp-content/uploads/2021/05/Login.jpg"
-              alt="Instagram"
-              className="image"
-            />
+    <main className="auth-page premium-page">
+      <section className="auth-shell glass-panel">
+        <div className="auth-visual">
+          <span className="auth-kicker">
+            <FiZap /> Creator-first social
+          </span>
+          <div>
+            <h1>
+              Build your <span className="gradient-text">signal</span>, not
+              just a profile.
+            </h1>
+            <p>
+              Luma turns posts, stories, messages, and community moments into a
+              calm, expressive social workspace.
+            </p>
           </div>
-          <div className="formContainer">
-            <h2>Sign up for Instagram</h2>
-            <form>
-              <div className="formGroup">
-                <input
-                  type="text"
-                  placeholder="Username"
-                  className="inputField"
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div className="formGroup">
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="inputField"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="formGroup">
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="inputField"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <button onClick={SignUpFunc} className="btn">
-                Sign Up
-              </button>
-              <p>
-                Already have an account, <Link href="/login">Login</Link>
-              </p>
-            </form>
+          <div className="auth-metrics">
+            <div className="metric">
+              <strong>48k</strong>
+              <span>daily sparks</span>
+            </div>
+            <div className="metric">
+              <strong>92%</strong>
+              <span>faster sharing</span>
+            </div>
+            <div className="metric">
+              <strong>24/7</strong>
+              <span>secure sync</span>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+        <div className="auth-card">
+          <div className="brand-mark">L</div>
+          <h2>Join Luma Social</h2>
+          <p>Create a luminous home for your ideas, friends, and moments.</p>
+          <form className="auth-form">
+            <input
+              type="text"
+              placeholder="Display name"
+              className="field"
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              type="email"
+              placeholder="Email address"
+              className="field"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="field"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button onClick={SignUpFunc} className="primary-button">
+              Create account <FiArrowRight />
+            </button>
+            <p className="auth-switch">
+              Already have an account? <Link href="/login">Log in</Link>
+            </p>
+          </form>
+          <p className="auth-switch">
+            <FiShield /> Protected authentication powered by Firebase.
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }
 

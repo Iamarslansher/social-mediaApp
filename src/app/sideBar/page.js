@@ -2,13 +2,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import {
-  FaHome,
-  FaSearch,
-  FaPlusSquare,
-  FaHeart,
-  FaUser,
+  FaHome, FaSearch, FaPlusSquare, FaHeart, FaUser,
 } from "react-icons/fa";
-import "./sideBar.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getProfile, logout } from "../config/fireBase";
@@ -19,6 +14,7 @@ import { IoSettings } from "react-icons/io5";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { MdHelpOutline } from "react-icons/md";
 import { IoMdLogOut } from "react-icons/io";
+import { FiActivity } from "react-icons/fi";
 
 const SideBar = () => {
   const router = useRouter();
@@ -26,7 +22,7 @@ const SideBar = () => {
 
   useEffect(() => {
     getProfileFirebase();
-  });
+  }, []);
 
   const getProfileFirebase = async () => {
     const pfile = await getProfile();
@@ -40,103 +36,99 @@ const SideBar = () => {
   };
 
   return (
-    <>
-      <div className="sidebar">
-        <ul className="sidebarList">
-          <li>
-            <Link
-              href="/profile"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              {!profile ? (
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
-                  alt=""
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    objectPosition: "center",
-                  }}
-                />
-              ) : (
-                <img
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    objectPosition: "center",
-                  }}
-                  src={profile[0]?.image}
-                />
-              )}
-              {/* <FaUser /> */}
-              <span className="custom">Profile</span>
-            </Link>
-          </li>
-          <li>
+    <aside className="sidebar glass-panel">
+      <Link href="/mainDashboard" className="sidebar-brand">
+        <div className="brand-mark">L</div>
+        <div>
+          <strong>Luma</strong>
+          <span>Social OS</span>
+        </div>
+      </Link>
+      <Link href="/profile" className="profile-chip">
+        <img
+          className="avatar"
+          src={profile[0]?.image || "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80"}
+          alt="Profile"
+        />
+        <div>
+          <strong>Your studio</strong>
+          <span>Update profile</span>
+        </div>
+      </Link>
+      <ul className="sidebar-list">
+        <li>
+          <Link className="nav-link active" href="/mainDashboard">
             <FaHome />
-            <span className="custom">Home</span>
-          </li>
-          <li>
+            <span>Home</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" href="/people">
             <FaSearch />
-            <span className="custom">Explore</span>
-          </li>
-          <li>
-            <Link
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-              href="/addPost"
-            >
-              <FaPlusSquare />
-              <span className="custom">New Post</span>
-            </Link>
-          </li>
-          <li>
-            <FaHeart />
-            <span className="custom">Activity</span>
-          </li>
-
-          <li>
+            <span>Explore</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" href="/addPost">
+            <FaPlusSquare />
+            <span>New post</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" href="/notifications">
             <IoMdNotificationsOutline />
-            <span className="custom">Notifications</span>
-          </li>
-          <li>
+            <span>Notifications</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" href="/messages">
             <MdMessage />
-            <span className="custom">Messages</span>
-          </li>
-          <li>
-            <CiBookmarkPlus />
-            <span className="custom">Bookmarks</span>
-          </li>
-          <li>
+            <span>Messages</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" href="/profile">
+            <FaUser />
+            <span>Profile</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" href="/settings">
             <IoSettings />
-            <span className="custom">Settings</span>
-          </li>
-          <li>
+            <span>Settings</span>
+          </Link>
+        </li>
+        <li>
+          <button className="nav-link" type="button">
+            <FaHeart />
+            <span>Activity</span>
+          </button>
+        </li>
+        <li>
+          <button className="nav-link" type="button">
+            <CiBookmarkPlus />
+            <span>Bookmarks</span>
+          </button>
+        </li>
+        <li>
+          <button className="nav-link" type="button">
             <MdHelpOutline />
-            <span className="custom">Help</span>
-          </li>
-          <li>
-            <IoMdLogOut onClick={logOut} />
-            <span className="custom">Log out</span>
-          </li>
-        </ul>
+            <span>Help</span>
+          </button>
+        </li>
+        <li>
+          <button className="nav-link" type="button" onClick={logOut}>
+            <IoMdLogOut />
+            <span>Log out</span>
+          </button>
+        </li>
+      </ul>
+      <div className="sidebar-footer">
+        <FiActivity />
+        <p>Your creator score is up 18% this week.</p>
+        <button className="ghost-button">View insights</button>
       </div>
-    </>
+    </aside>
   );
 };
 
