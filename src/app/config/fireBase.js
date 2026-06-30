@@ -24,18 +24,8 @@ import {
   orderBy,
   serverTimestamp,
 } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { uploadToCloudinary } from "../lib/cloudinary";
 
-//
-// OLD
-// const firebaseConfig = {
-//   apiKey: "AIzaSyBWnZ82SS81gKxDYjuzyZWid4E1LGJ_zNw",
-//   authDomain: "hackathon-fd326.firebaseapp.com",
-//   projectId: "hackathon-fd326",
-//   storageBucket: "hackathon-fd326.appspot.com",
-//   messagingSenderId: "753760336430",
-//   appId: "1:753760336430:web:6141c41ba885c31188bdbf",
-// };
 const firebaseConfig = {
   apiKey: "AIzaSyBWnZ82SS81gKxDYjuzyZWid4E1LGJ_zNw",
   authDomain: "hackathon-fd326.firebaseapp.com",
@@ -48,8 +38,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 export const facebook = new FacebookAuthProvider();
+
+// Remove after working
+// const storage = getStorage(app);
 
 const fallbackAvatar =
   "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80";
@@ -67,7 +59,10 @@ const getCurrentUserProfile = async () => {
   }
   const profile = {
     uid: currentUser.uid,
-    name: currentUser.displayName || currentUser.email?.split("@")[0] || "Luma Creator",
+    name:
+      currentUser.displayName ||
+      currentUser.email?.split("@")[0] ||
+      "Luma Creator",
     email: currentUser.email || "",
     photo: currentUser.photoURL || fallbackAvatar,
     bio: "Building a luminous social presence.",
@@ -83,13 +78,17 @@ const getCurrentUserProfile = async () => {
   await setDoc(userRef, profile, { merge: true });
   return { id: currentUser.uid, ...profile };
 };
-//  SINGN_UP
 
+//  SINGN_UP
 export async function signUp(userInfo) {
   console.log(userInfo, "USerINFO");
   const { name, email, password } = userInfo;
   try {
-    const credentials = await createUserWithEmailAndPassword(auth, email, password);
+    const credentials = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
     await setDoc(doc(db, "users", credentials.user.uid), {
       uid: credentials.user.uid,
       name,
@@ -149,7 +148,7 @@ export const loginWithFacebook = async (provider) => {
         lastActive: serverTimestamp(),
         createdAt: serverTimestamp(),
       },
-      { merge: true }
+      { merge: true },
     );
     await addDoc(collection(db, "facebookloginuser"), {
       name: result.user.displayName,
@@ -182,18 +181,15 @@ export const logout = async () => {
 export async function userCardItem(itemInfo) {
   try {
     const { files = [], des, privacy = "Public", richText = "" } = itemInfo;
+
     const currentUser = await getCurrentUserProfile();
+
     const uploads = await Promise.all(
       files.map(async (file) => {
-        const storageRef = ref(storage, `posts/${Date.now()}-${file.name}`);
-        await uploadBytes(storageRef, file);
-        return {
-          url: await getDownloadURL(storageRef),
-          type: file.type.startsWith("video") ? "video" : "image",
-          name: file.name,
-        };
-      })
+        return await uploadToCloudinary(file);
+      }),
     );
+
     await addDoc(collection(db, "userItem"), {
       description: des,
       richText,
@@ -205,12 +201,13 @@ export async function userCardItem(itemInfo) {
       authorPhoto: currentUser?.photo || fallbackAvatar,
       createdAt: serverTimestamp(),
     });
-    alert("Post successfully!");
-  } catch (e) {
-    alert(e.message);
+
+    alert("Post published successfully!");
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
   }
 }
-
 // get Post from firebase
 export async function getingAds() {
   const querySnapshot = await getDocs(collection(db, "userItem"));
@@ -231,11 +228,11 @@ export async function updateprofile(itemInfo) {
   try {
     const { updateProfile, bio, skills = [], interests = [] } = itemInfo;
     let imgUrl = "";
+
     if (updateProfile?.name) {
-      const storageRef = ref(storage, `profile/${updateProfile.name}`);
-      await uploadBytes(storageRef, updateProfile);
-      imgUrl = await getDownloadURL(storageRef);
+      imgUrl = (await uploadToCloudinary(updateProfile)).url;
     }
+
     const currentUser = auth.currentUser;
     if (currentUser) {
       await setDoc(
@@ -247,7 +244,7 @@ export async function updateprofile(itemInfo) {
           interests,
           updatedAt: serverTimestamp(),
         },
-        { merge: true }
+        { merge: true },
       );
     }
     await addDoc(collection(db, "profile"), {
@@ -295,7 +292,10 @@ export function listenUsers(callback) {
 }
 
 export function listenPosts(callback) {
-  const postsQuery = query(collection(db, "userItem"), orderBy("createdAt", "desc"));
+  const postsQuery = query(
+    collection(db, "userItem"),
+    orderBy("createdAt", "desc"),
+  );
   return onSnapshot(postsQuery, (snapshot) => callback(mapSnapshot(snapshot)));
 }
 
@@ -304,19 +304,27 @@ export async function updatePresence(online = true) {
   await setDoc(
     doc(db, "users", auth.currentUser.uid),
     { online, lastActive: serverTimestamp() },
-    { merge: true }
+    { merge: true },
   );
 }
 
 export async function followUser(targetUser) {
   const currentUser = await getCurrentUserProfile();
   if (!currentUser || currentUser.uid === targetUser.uid) return;
-  const following = Array.from(new Set([...(currentUser.following || []), targetUser.uid]));
-  await setDoc(doc(db, "users", currentUser.uid), { following }, { merge: true });
+  const following = Array.from(
+    new Set([...(currentUser.following || []), targetUser.uid]),
+  );
+  await setDoc(
+    doc(db, "users", currentUser.uid),
+    { following },
+    { merge: true },
+  );
   const targetRef = doc(db, "users", targetUser.uid);
   const targetSnap = await getDoc(targetRef);
   const target = targetSnap.data() || {};
-  const followers = Array.from(new Set([...(target.followers || []), currentUser.uid]));
+  const followers = Array.from(
+    new Set([...(target.followers || []), currentUser.uid]),
+  );
   await setDoc(targetRef, { followers }, { merge: true });
   await createNotification(targetUser.uid, {
     type: "follow",
@@ -330,8 +338,12 @@ export async function unfollowUser(targetUser) {
   if (!currentUser) return;
   await setDoc(
     doc(db, "users", currentUser.uid),
-    { following: (currentUser.following || []).filter((uid) => uid !== targetUser.uid) },
-    { merge: true }
+    {
+      following: (currentUser.following || []).filter(
+        (uid) => uid !== targetUser.uid,
+      ),
+    },
+    { merge: true },
   );
 }
 
@@ -360,9 +372,11 @@ export function listenFriendRequests(callback) {
   const requestsQuery = query(
     collection(db, "friendRequests"),
     where("to", "==", auth.currentUser.uid),
-    where("status", "==", "pending")
+    where("status", "==", "pending"),
   );
-  return onSnapshot(requestsQuery, (snapshot) => callback(mapSnapshot(snapshot)));
+  return onSnapshot(requestsQuery, (snapshot) =>
+    callback(mapSnapshot(snapshot)),
+  );
 }
 
 export async function respondFriendRequest(request, accepted) {
@@ -375,13 +389,21 @@ export async function respondFriendRequest(request, accepted) {
   const requester = requesterSnap.data() || {};
   await setDoc(
     doc(db, "users", currentUser.uid),
-    { friends: Array.from(new Set([...(currentUser.friends || []), request.from])) },
-    { merge: true }
+    {
+      friends: Array.from(
+        new Set([...(currentUser.friends || []), request.from]),
+      ),
+    },
+    { merge: true },
   );
   await setDoc(
     requesterRef,
-    { friends: Array.from(new Set([...(requester.friends || []), currentUser.uid])) },
-    { merge: true }
+    {
+      friends: Array.from(
+        new Set([...(requester.friends || []), currentUser.uid]),
+      ),
+    },
+    { merge: true },
   );
   await createNotification(request.from, {
     type: "friend-accepted",
@@ -395,9 +417,11 @@ export function listenNotifications(callback) {
   const notificationsQuery = query(
     collection(db, "notifications"),
     where("to", "==", auth.currentUser.uid),
-    orderBy("createdAt", "desc")
+    orderBy("createdAt", "desc"),
   );
-  return onSnapshot(notificationsQuery, (snapshot) => callback(mapSnapshot(snapshot)));
+  return onSnapshot(notificationsQuery, (snapshot) =>
+    callback(mapSnapshot(snapshot)),
+  );
 }
 
 export async function createNotification(to, payload) {
@@ -416,9 +440,11 @@ export function listenMessages(otherUserId, callback) {
   const conversationId = conversationIdFor(auth.currentUser.uid, otherUserId);
   const messagesQuery = query(
     collection(db, "conversations", conversationId, "messages"),
-    orderBy("createdAt", "asc")
+    orderBy("createdAt", "asc"),
   );
-  return onSnapshot(messagesQuery, (snapshot) => callback(mapSnapshot(snapshot)));
+  return onSnapshot(messagesQuery, (snapshot) =>
+    callback(mapSnapshot(snapshot)),
+  );
 }
 
 export async function sendMessage(otherUser, text) {
@@ -432,7 +458,7 @@ export async function sendMessage(otherUser, text) {
       lastMessage: text.trim(),
       updatedAt: serverTimestamp(),
     },
-    { merge: true }
+    { merge: true },
   );
   await addDoc(collection(db, "conversations", conversationId, "messages"), {
     from: currentUser.uid,

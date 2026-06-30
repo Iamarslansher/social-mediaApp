@@ -1,16 +1,5 @@
 /* Sidebar.module.css */
 
-.sidebar {
-  background-color: #fafafa;
-  width: 200px;
-  height: 86%;
-  padding: 20px;
-  position: fixed;
-  top: 70px;
-  left: 0;
-  bottom: 0;
-}
-
 .sidebarList {
   list-style-type: none;
   padding: 0;

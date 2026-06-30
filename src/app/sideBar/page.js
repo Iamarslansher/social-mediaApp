@@ -2,7 +2,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import {
-  FaHome, FaSearch, FaPlusSquare, FaHeart, FaUser,
+  FaHome,
+  FaSearch,
+  FaPlusSquare,
+  FaHeart,
+  FaUser,
 } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,6 +19,8 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { MdHelpOutline } from "react-icons/md";
 import { IoMdLogOut } from "react-icons/io";
 import { FiActivity } from "react-icons/fi";
+
+import logo from "../assets/logo/logo.png";
 
 const SideBar = () => {
   const router = useRouter();
@@ -38,7 +44,7 @@ const SideBar = () => {
   return (
     <aside className="sidebar glass-panel">
       <Link href="/mainDashboard" className="sidebar-brand">
-        <div className="brand-mark">L</div>
+        <img src={logo.src} alt="Logo" className="brand-mark" />
         <div>
           <strong>Luma</strong>
           <span>Social OS</span>
@@ -47,7 +53,10 @@ const SideBar = () => {
       <Link href="/profile" className="profile-chip">
         <img
           className="avatar"
-          src={profile[0]?.image || "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80"}
+          src={
+            profile[0]?.image ||
+            "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80"
+          }
           alt="Profile"
         />
         <div>

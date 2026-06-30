@@ -39,7 +39,7 @@ function MainDashboard() {
         normalized
           ? user.name?.toLowerCase().includes(normalized) ||
             user.email?.toLowerCase().includes(normalized)
-          : true
+          : true,
       )
       .slice(0, 4);
   }, [query, users]);
@@ -112,7 +112,11 @@ function MainDashboard() {
             {requests.map((request) => (
               <div className="rail-row" key={request.id}>
                 <div className="post-author">
-                  <img className="avatar" src={request.fromPhoto} alt={request.fromName} />
+                  <img
+                    className="avatar"
+                    src={request.fromPhoto}
+                    alt={request.fromName}
+                  />
                   <div>
                     <strong>{request.fromName}</strong>
                     <div className="rail-muted">Wants to connect</div>
@@ -160,7 +164,7 @@ function MainDashboard() {
                 </div>
                 <button className="ghost-button">Join</button>
               </div>
-            )
+            ),
           )}
         </section>
       </aside>

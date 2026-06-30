@@ -28,12 +28,12 @@ body {
   margin: 0;
   color: var(--text);
   background: linear-gradient(
-      135deg,
-      #07110f 0%,
-      #10231f 38%,
-      #2a1c29 72%,
-      #0f1825 100%
-    );
+    135deg,
+    #07110f 0%,
+    #10231f 38%,
+    #2a1c29 72%,
+    #0f1825 100%
+  );
   overflow-x: hidden;
 }
 
@@ -43,9 +43,21 @@ body::before {
   inset: -20%;
   z-index: -2;
   background:
-    radial-gradient(circle at 12% 18%, rgba(114, 241, 223, 0.24), transparent 28%),
-    radial-gradient(circle at 78% 10%, rgba(255, 141, 122, 0.22), transparent 26%),
-    radial-gradient(circle at 70% 80%, rgba(142, 246, 161, 0.16), transparent 30%);
+    radial-gradient(
+      circle at 12% 18%,
+      rgba(114, 241, 223, 0.24),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 78% 10%,
+      rgba(255, 141, 122, 0.22),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 70% 80%,
+      rgba(142, 246, 161, 0.16),
+      transparent 30%
+    );
   filter: blur(10px);
   animation: atmosphere 18s ease-in-out infinite alternate;
 }
@@ -115,13 +127,22 @@ img {
 
 .glass-panel {
   border: 1px solid var(--line);
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.07)
+  );
   box-shadow: var(--shadow);
   backdrop-filter: blur(22px);
 }
 
 .gradient-text {
-  background: linear-gradient(115deg, var(--cyan), var(--mint) 45%, var(--amber));
+  background: linear-gradient(
+    115deg,
+    var(--cyan),
+    var(--mint) 45%,
+    var(--amber)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -151,7 +172,11 @@ img {
   justify-content: center;
   gap: 10px;
   cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
 }
 
 .primary-button {
@@ -201,7 +226,10 @@ img {
   color: var(--text);
   outline: none;
   padding: 0 16px;
-  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
 }
 
 .field::placeholder {
@@ -241,14 +269,19 @@ img {
   background:
     linear-gradient(160deg, rgba(114, 241, 223, 0.18), transparent 42%),
     linear-gradient(20deg, rgba(255, 141, 122, 0.18), transparent 36%),
-    url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80") center/cover;
+    url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80")
+      center/cover;
 }
 
 .auth-visual::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(7, 17, 15, 0.9), rgba(7, 17, 15, 0.18));
+  background: linear-gradient(
+    to top,
+    rgba(7, 17, 15, 0.9),
+    rgba(7, 17, 15, 0.18)
+  );
 }
 
 .auth-visual > * {
@@ -415,6 +448,7 @@ img {
   display: flex;
   flex-direction: column;
   gap: 22px;
+  overflow: auto;
 }
 
 .sidebar-brand {
@@ -487,7 +521,10 @@ img {
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background 180ms ease, transform 180ms ease, border-color 180ms ease;
+  transition:
+    background 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease;
 }
 
 .nav-link svg {
@@ -506,7 +543,11 @@ img {
   margin-top: auto;
   border-radius: 20px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(114, 241, 223, 0.18), rgba(255, 141, 122, 0.14));
+  background: linear-gradient(
+    135deg,
+    rgba(114, 241, 223, 0.18),
+    rgba(255, 141, 122, 0.14)
+  );
   border: 1px solid var(--line);
 }
 
@@ -569,7 +610,9 @@ img {
   gap: 10px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--line);
-  transition: transform 180ms ease, background 180ms ease;
+  transition:
+    transform 180ms ease,
+    background 180ms ease;
 }
 
 .story-card:hover {
@@ -702,7 +745,9 @@ img {
   background: rgba(255, 255, 255, 0.09);
   border: 1px solid var(--line);
   cursor: pointer;
-  transition: transform 180ms ease, background 180ms ease;
+  transition:
+    transform 180ms ease,
+    background 180ms ease;
 }
 
 .reaction-button:hover {
@@ -748,7 +793,9 @@ img {
 
 .status-dot.online {
   background: var(--mint);
-  box-shadow: 0 0 0 4px rgba(142, 246, 161, 0.16), 0 0 18px rgba(142, 246, 161, 0.6);
+  box-shadow:
+    0 0 0 4px rgba(142, 246, 161, 0.16),
+    0 0 18px rgba(142, 246, 161, 0.6);
 }
 
 .people-grid,
@@ -811,7 +858,10 @@ img {
   text-align: center;
   padding: 20px;
   border-style: dashed;
-  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
 }
 
 .drop-zone.active,
@@ -906,7 +956,8 @@ img {
   align-items: end;
   background:
     linear-gradient(to top, rgba(7, 17, 15, 0.92), rgba(7, 17, 15, 0.12)),
-    url("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1400&q=80") center/cover;
+    url("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1400&q=80")
+      center/cover;
 }
 
 .profile-avatar-xl {
@@ -953,7 +1004,11 @@ img {
 .gallery-tile {
   min-height: 150px;
   background:
-    linear-gradient(135deg, rgba(114, 241, 223, 0.2), rgba(255, 141, 122, 0.14)),
+    linear-gradient(
+      135deg,
+      rgba(114, 241, 223, 0.2),
+      rgba(255, 141, 122, 0.14)
+    ),
     rgba(255, 255, 255, 0.08);
 }
 
@@ -1000,8 +1055,16 @@ img {
   height: 120px;
   border-radius: 20px;
   background:
-    linear-gradient(135deg, rgba(114, 241, 223, 0.24), rgba(255, 141, 122, 0.16)),
-    repeating-linear-gradient(90deg, transparent 0 24px, rgba(255, 255, 255, 0.06) 24px 25px);
+    linear-gradient(
+      135deg,
+      rgba(114, 241, 223, 0.24),
+      rgba(255, 141, 122, 0.16)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 24px,
+      rgba(255, 255, 255, 0.06) 24px 25px
+    );
   display: flex;
   align-items: end;
   gap: 9px;
@@ -1042,7 +1105,8 @@ img {
   position: relative;
   background:
     linear-gradient(to top, rgba(7, 17, 15, 0.86), transparent 65%),
-    url("https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&w=900&q=80") center/cover;
+    url("https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&w=900&q=80")
+      center/cover;
   padding: 20px;
   display: flex;
   align-items: end;
@@ -1074,7 +1138,8 @@ textarea.field {
   align-items: end;
   background:
     linear-gradient(to top, rgba(7, 17, 15, 0.9), rgba(7, 17, 15, 0.18)),
-    url("https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80") center/cover;
+    url("https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80")
+      center/cover;
   margin-bottom: 18px;
 }
 
@@ -1113,7 +1178,12 @@ textarea.field {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.18),
+    transparent
+  );
   animation: shimmer 1.6s infinite;
 }
 
@@ -1200,6 +1270,16 @@ textarea.field {
     height: auto;
     padding: 10px;
     border-radius: 24px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none !important;
+  }
+
+  .sidebar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none !important;
   }
 
   .sidebar-brand,
