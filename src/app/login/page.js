@@ -5,23 +5,36 @@ import { logIn, loginWithFacebook } from "../config/fireBase";
 import { useRouter } from "next/navigation";
 import { FaFacebook } from "react-icons/fa";
 import { FiArrowRight, FiLock, FiRadio } from "react-icons/fi";
+import { ToastContainer, toast } from "react-toastify";
 
 function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const notify = (message) =>
+    toast(message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+
   const loginFunc = async (e) => {
     e.preventDefault();
     try {
       if (email.trim() === "" || password.trim() === "") {
-        alert("Please fill all the fields");
+        notify("Please fill all the fields");
         return;
       }
       await logIn({ email, password });
       router.push("/mainDashboard");
     } catch (error) {
-      alert(error.message);
+      notify(error.message);
     }
   };
 
@@ -30,7 +43,7 @@ function Login() {
       await loginWithFacebook();
       router.push("/mainDashboard");
     } catch (error) {
-      console.log(error.message);
+      notify(error.message);
     }
   };
 
@@ -83,7 +96,7 @@ function Login() {
               className="field"
               onChange={(e) => setPassword(e.target.value)}
             />
-
+            <ToastContainer />
             <button onClick={loginFunc} className="primary-button">
               Log in <FiArrowRight />
             </button>

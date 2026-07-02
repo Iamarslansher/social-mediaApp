@@ -5,6 +5,7 @@ import { useState } from "react";
 import { signUp } from "../config/fireBase";
 import { useRouter } from "next/navigation";
 import { FiArrowRight, FiShield, FiZap } from "react-icons/fi";
+import { ToastContainer, toast } from "react-toastify";
 
 function Signup() {
   const router = useRouter();
@@ -12,17 +13,31 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const notify = (message) =>
+    toast(message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+
   const SignUpFunc = async (e) => {
     e.preventDefault();
+
     try {
       if (name.trim() === "" || email.trim() === "" || password.trim() === "") {
-        alert("Please fill all the fields");
+        notify("Please fill all the fields");
         return;
       }
       await signUp({ name, email, password });
+      notify("Account created successfully!");
       router.push("/mainDashboard");
     } catch (error) {
-      alert(error.message);
+      notify(error.message);
     }
   };
 
@@ -35,8 +50,8 @@ function Signup() {
           </span>
           <div>
             <h1>
-              Build your <span className="gradient-text">signal</span>, not
-              just a profile.
+              Build your <span className="gradient-text">signal</span>, not just
+              a profile.
             </h1>
             <p>
               Luma turns posts, stories, messages, and community moments into a
@@ -81,6 +96,7 @@ function Signup() {
               className="field"
               onChange={(e) => setPassword(e.target.value)}
             />
+            <ToastContainer />
             <button onClick={SignUpFunc} className="primary-button">
               Create account <FiArrowRight />
             </button>

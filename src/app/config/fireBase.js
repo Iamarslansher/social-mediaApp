@@ -109,9 +109,9 @@ export async function signUp(userInfo) {
       name,
       email,
     });
-    alert("Sign Up Success");
+    notify("Sign Up Success");
   } catch (error) {
-    alert(error.message);
+    notify(error.message);
   }
 }
 
@@ -120,9 +120,9 @@ export async function logIn(userInfo) {
   const { email, password } = userInfo;
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    alert("Log In Success");
+    notify("Log In Success");
   } catch (error) {
-    alert(error.message);
+    notify(error.message);
   }
 }
 
