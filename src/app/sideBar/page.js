@@ -20,7 +20,7 @@ import { MdHelpOutline } from "react-icons/md";
 import { IoMdLogOut } from "react-icons/io";
 import { FiActivity } from "react-icons/fi";
 
-import logo from "../assets/logo/logo.png";
+// import logo from "../assets/logo/logo.png";
 
 const SideBar = () => {
   const router = useRouter();
@@ -44,7 +44,8 @@ const SideBar = () => {
   return (
     <aside className="sidebar glass-panel">
       <Link href="/mainDashboard" className="sidebar-brand">
-        <img src={logo.src} alt="Logo" className="brand-mark" />
+        <div className="brand-mark">L</div>
+        {/* <img src={logo.src} alt="Logo" className="brand-mark" /> */}
         <div>
           <strong>Luma</strong>
           <span>Social OS</span>

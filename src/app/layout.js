@@ -5,7 +5,8 @@ const manrope = Manrope({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Luma Social",
-  description: "A premium social media experience for creators and communities.",
+  description:
+    "A premium social media experience for creators and communities.",
 };
 
 export default function RootLayout({ children }) {

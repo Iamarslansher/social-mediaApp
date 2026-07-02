@@ -72,7 +72,7 @@ function MainDashboard() {
         </div>
         <Post />
       </section>
-      <aside className="right-rail glass-panel">
+      <aside className="right-rail glass-panel rail">
         <section className="rail-section">
           <h3>Search / Discover</h3>
           <input
