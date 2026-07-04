@@ -1,3 +1,4 @@
+// IMPORTS
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -7,7 +8,7 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
-//
+
 import {
   getFirestore,
   collection,
@@ -26,6 +27,7 @@ import {
 } from "firebase/firestore";
 import { uploadToCloudinary } from "../lib/cloudinary";
 
+// FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyBWnZ82SS81gKxDYjuzyZWid4E1LGJ_zNw",
   authDomain: "hackathon-fd326.firebaseapp.com",
@@ -35,20 +37,21 @@ const firebaseConfig = {
   appId: "1:753760336430:web:6141c41ba885c31188bdbf",
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const db = getFirestore(app);
 export const facebook = new FacebookAuthProvider();
 
-// Remove after working
-// const storage = getStorage(app);
-
+// FALLBACK AVATAR
 const fallbackAvatar =
   "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80";
 
+// MAP SNAPSHOT
 const mapSnapshot = (snapshot) =>
   snapshot.docs.map((document) => ({ id: document.id, ...document.data() }));
 
+// current User profile
 const getCurrentUserProfile = async () => {
   const currentUser = auth.currentUser;
   if (!currentUser) return null;
@@ -126,7 +129,7 @@ export async function logIn(userInfo) {
   }
 }
 
-//Function to login user
+// login with facebook
 export const loginWithFacebook = async (provider) => {
   console.log(provider);
   try {
@@ -208,6 +211,7 @@ export async function userCardItem(itemInfo) {
     alert(error.message);
   }
 }
+
 // get Post from firebase
 export async function getingAds() {
   const querySnapshot = await getDocs(collection(db, "userItem"));
@@ -256,6 +260,7 @@ export async function updateprofile(itemInfo) {
   }
 }
 
+// get profile
 export async function getProfile() {
   const querySnapshot = await getDocs(collection(db, "profile"));
   const ads = [];
