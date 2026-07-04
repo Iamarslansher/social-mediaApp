@@ -51,37 +51,6 @@ const fallbackAvatar =
 const mapSnapshot = (snapshot) =>
   snapshot.docs.map((document) => ({ id: document.id, ...document.data() }));
 
-// current User profile
-const getCurrentUserProfile = async () => {
-  const currentUser = auth.currentUser;
-  if (!currentUser) return null;
-  const userRef = doc(db, "users", currentUser.uid);
-  const userSnap = await getDoc(userRef);
-  if (userSnap.exists()) {
-    return { id: userSnap.id, ...userSnap.data() };
-  }
-  const profile = {
-    uid: currentUser.uid,
-    name:
-      currentUser.displayName ||
-      currentUser.email?.split("@")[0] ||
-      "Luma Creator",
-    email: currentUser.email || "",
-    photo: currentUser.photoURL || fallbackAvatar,
-    bio: "Building a luminous social presence.",
-    skills: ["Design", "Community", "Storytelling"],
-    interests: ["Photography", "Creative tech", "Culture"],
-    followers: [],
-    following: [],
-    friends: [],
-    online: true,
-    lastActive: serverTimestamp(),
-    createdAt: serverTimestamp(),
-  };
-  await setDoc(userRef, profile, { merge: true });
-  return { id: currentUser.uid, ...profile };
-};
-
 //  SINGN_UP
 export async function signUp(userInfo) {
   console.log(userInfo, "USerINFO");
@@ -107,12 +76,16 @@ export async function signUp(userInfo) {
       lastActive: serverTimestamp(),
       createdAt: serverTimestamp(),
     });
-    await addDoc(collection(db, "user"), {
-      uid: credentials.user.uid,
-      name,
-      email,
-    });
-    notify("Sign Up Success");
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ uid: credentials.user.uid, name, email }),
+    );
+
+    // await addDoc(collection(db, "user"), {
+    //   uid: credentials.user.uid,
+    //   name,
+    //   email,
+    // });
   } catch (error) {
     notify(error.message);
   }
@@ -123,9 +96,9 @@ export async function logIn(userInfo) {
   const { email, password } = userInfo;
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    notify("Log In Success");
+    alert("Log In Success");
   } catch (error) {
-    notify(error.message);
+    alert(error.message);
   }
 }
 
@@ -178,6 +151,37 @@ export const logout = async () => {
   } catch (e) {
     console.log(e);
   }
+};
+
+// current User profile
+const getCurrentUserProfile = async () => {
+  const currentUser = auth.currentUser;
+  if (!currentUser) return null;
+  const userRef = doc(db, "users", currentUser.uid);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    return { id: userSnap.id, ...userSnap.data() };
+  }
+  const profile = {
+    uid: currentUser.uid,
+    name:
+      currentUser.displayName ||
+      currentUser.email?.split("@")[0] ||
+      "Luma Creator",
+    email: currentUser.email || "",
+    photo: currentUser.photoURL || fallbackAvatar,
+    bio: "Building a luminous social presence.",
+    skills: ["Design", "Community", "Storytelling"],
+    interests: ["Photography", "Creative tech", "Culture"],
+    followers: [],
+    following: [],
+    friends: [],
+    online: true,
+    lastActive: serverTimestamp(),
+    createdAt: serverTimestamp(),
+  };
+  await setDoc(userRef, profile, { merge: true });
+  return { id: currentUser.uid, ...profile };
 };
 
 // Add-Post in firebase
