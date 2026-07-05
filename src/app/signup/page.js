@@ -5,7 +5,7 @@ import { useState } from "react";
 import { signUp } from "../config/fireBase";
 import { useRouter } from "next/navigation";
 import { FiArrowRight, FiShield, FiZap } from "react-icons/fi";
-import { ToastContainer, toast } from "react-toastify";
+import { successToast, errorToast } from "@/utils/toast";
 
 function Signup() {
   const router = useRouter();
@@ -13,31 +13,30 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const notify = (message) =>
-    toast(message, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-    });
+  // const notify = (message) =>
+  //   toast(message, {
+  //     position: "top-right",
+  //     autoClose: 5000,
+  //     hideProgressBar: false,
+  //     closeOnClick: true,
+  //     pauseOnHover: true,
+  //     draggable: true,
+  //     progress: undefined,
+  //     theme: "dark",
+  //   });
 
   const SignUpFunc = async (e) => {
     e.preventDefault();
-
     try {
       if (name.trim() === "" || email.trim() === "" || password.trim() === "") {
-        notify("Please fill all the fields");
+        errorToast("Please fill all the fields");
         return;
       }
-      await signUp({ name, email, password });
-      notify("Account created successfully!");
-      router.push("/mainDashboard");
+      await signUp({ name, email, password }, router);
+      // successToast("Account created successfully!");
+      // router.push("/mainDashboard");
     } catch (error) {
-      notify(error.message);
+      errorToast(error.message);
     }
   };
 
@@ -96,7 +95,7 @@ function Signup() {
               className="field"
               onChange={(e) => setPassword(e.target.value)}
             />
-            <ToastContainer />
+            {/* <ToastContainer /> */}
             <button onClick={SignUpFunc} className="primary-button">
               Create account <FiArrowRight />
             </button>

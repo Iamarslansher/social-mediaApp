@@ -8,7 +8,6 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
-
 import {
   getFirestore,
   collection,
@@ -26,6 +25,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { uploadToCloudinary } from "../lib/cloudinary";
+import { successToast, errorToast } from "@/utils/toast";
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -52,8 +52,7 @@ const mapSnapshot = (snapshot) =>
   snapshot.docs.map((document) => ({ id: document.id, ...document.data() }));
 
 //  SINGN_UP
-export async function signUp(userInfo) {
-  console.log(userInfo, "USerINFO");
+export async function signUp(userInfo, router) {
   const { name, email, password } = userInfo;
   try {
     const credentials = await createUserWithEmailAndPassword(
@@ -76,18 +75,20 @@ export async function signUp(userInfo) {
       lastActive: serverTimestamp(),
       createdAt: serverTimestamp(),
     });
+
     localStorage.setItem(
       "user",
       JSON.stringify({ uid: credentials.user.uid, name, email }),
     );
-
+    successToast("Account created successfully!");
+    router.push("/mainDashboard");
     // await addDoc(collection(db, "user"), {
     //   uid: credentials.user.uid,
     //   name,
     //   email,
     // });
   } catch (error) {
-    notify(error.message);
+    errorToast(error.message);
   }
 }
 
