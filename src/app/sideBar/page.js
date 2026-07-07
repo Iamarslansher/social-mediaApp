@@ -12,15 +12,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getProfile, logout } from "../config/fireBase";
 
-import { MdMessage } from "react-icons/md";
 import { CiBookmarkPlus } from "react-icons/ci";
 import { IoSettings } from "react-icons/io5";
-import { IoMdNotificationsOutline } from "react-icons/io";
-import { MdHelpOutline } from "react-icons/md";
-import { IoMdLogOut } from "react-icons/io";
+import { MdHelpOutline, MdMessage } from "react-icons/md";
+import { IoMdLogOut, IoMdNotificationsOutline } from "react-icons/io";
 import { FiActivity } from "react-icons/fi";
-
-// import logo from "../assets/logo/logo.png";
 
 const SideBar = () => {
   const router = useRouter();
@@ -34,11 +30,6 @@ const SideBar = () => {
     const pfile = await getProfile();
     setProfile(pfile);
     // console.log(pfile);
-  };
-
-  const logOut = async () => {
-    await logout();
-    router.push("/login");
   };
 
   return (
@@ -127,7 +118,11 @@ const SideBar = () => {
           </button>
         </li>
         <li>
-          <button className="nav-link" type="button" onClick={logOut}>
+          <button
+            className="nav-link"
+            type="button"
+            onClick={async () => logout(router)}
+          >
             <IoMdLogOut />
             <span>Log out</span>
           </button>

@@ -144,7 +144,7 @@ export const loginWithFacebook = async (provider) => {
 };
 
 //Function to logout user
-export const logout = async () => {
+export const logout = async (router) => {
   try {
     if (auth.currentUser) {
       await updateDoc(doc(db, "users", auth.currentUser.uid), {
@@ -152,9 +152,12 @@ export const logout = async () => {
         lastActive: serverTimestamp(),
       });
     }
+    localStorage.removeItem("user");
+    successToast("Logged out successfully!");
     await signOut(auth);
+    router.push("/login");
   } catch (e) {
-    console.log(e);
+    errorToast(e);
   }
 };
 
