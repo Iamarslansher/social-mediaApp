@@ -92,9 +92,15 @@ export async function logIn(userInfo, router) {
   const { email, password } = userInfo;
   try {
     const user = await signInWithEmailAndPassword(auth, email, password);
-    console.log(user);
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        uid: user.user.uid,
+        email: user.user.email,
+        name: user.user.displayName,
+      }),
+    );
     successToast("Logged in successfully!");
-    return;
     router.push("/mainDashboard");
   } catch (error) {
     errorToast(error.message);
