@@ -82,24 +82,22 @@ export async function signUp(userInfo, router) {
     );
     successToast("Account created successfully!");
     router.push("/mainDashboard");
-    // await addDoc(collection(db, "user"), {
-    //   uid: credentials.user.uid,
-    //   name,
-    //   email,
-    // });
   } catch (error) {
     errorToast(error.message);
   }
 }
 
 //  LOGIN
-export async function logIn(userInfo) {
+export async function logIn(userInfo, router) {
   const { email, password } = userInfo;
   try {
-    await signInWithEmailAndPassword(auth, email, password);
-    alert("Log In Success");
+    const user = await signInWithEmailAndPassword(auth, email, password);
+    console.log(user);
+    successToast("Logged in successfully!");
+    return;
+    router.push("/mainDashboard");
   } catch (error) {
-    alert(error.message);
+    errorToast(error.message);
   }
 }
 

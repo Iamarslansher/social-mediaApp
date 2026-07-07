@@ -5,36 +5,23 @@ import { logIn, loginWithFacebook } from "../config/fireBase";
 import { useRouter } from "next/navigation";
 import { FaFacebook } from "react-icons/fa";
 import { FiArrowRight, FiLock, FiRadio } from "react-icons/fi";
-import { ToastContainer, toast } from "react-toastify";
+import { errorToast } from "@/utils/toast";
 
 function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const notify = (message) =>
-    toast(message, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-    });
-
   const loginFunc = async (e) => {
     e.preventDefault();
     try {
       if (email.trim() === "" || password.trim() === "") {
-        notify("Please fill all the fields");
+        errorToast("Please fill all the fields");
         return;
       }
-      await logIn({ email, password });
-      router.push("/mainDashboard");
+      await logIn({ email, password }, router);
     } catch (error) {
-      notify(error.message);
+      errorToast(error.message);
     }
   };
 
@@ -43,7 +30,7 @@ function Login() {
       await loginWithFacebook();
       router.push("/mainDashboard");
     } catch (error) {
-      notify(error.message);
+      errorToast(error.message);
     }
   };
 
@@ -96,7 +83,6 @@ function Login() {
               className="field"
               onChange={(e) => setPassword(e.target.value)}
             />
-            <ToastContainer />
             <button onClick={loginFunc} className="primary-button">
               Log in <FiArrowRight />
             </button>
