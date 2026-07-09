@@ -213,7 +213,7 @@ export async function userCardItem(itemInfo, router) {
 
     const userID =
       JSON.parse(localStorage.getItem("user"))?.uid || currentUser?.uid;
-    await setDoc(doc(db, "posts", userID), {
+    await setDoc(doc(db, "posts", postId), {
       postId,
       description: des,
       richText,
