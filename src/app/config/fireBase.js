@@ -224,6 +224,10 @@ export async function userCardItem(itemInfo, router) {
       authorName: currentUser?.name || "Luma Creator",
       authorPhoto: currentUser?.photo || fallbackAvatar,
       createdAt: serverTimestamp(),
+      likes: [],
+      commentsCount: 0,
+      sharesCount: 0,
+      updatedAt: serverTimestamp(),
     });
     updateToast(id, "Uploaded Successfully");
     router.push("/mainDashboard");
@@ -318,7 +322,7 @@ export function listenUsers(callback) {
 
 export function listenPosts(callback) {
   const postsQuery = query(
-    collection(db, "userItem"),
+    collection(db, "posts"),
     orderBy("createdAt", "desc"),
   );
   return onSnapshot(postsQuery, (snapshot) => callback(mapSnapshot(snapshot)));

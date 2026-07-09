@@ -51,7 +51,7 @@ function MainDashboard() {
       <section className="feed-column">
         <div className="hero-composer glass-panel">
           <h1>
-            Today&apos;s pulse, curated in{" "}
+            Today&apos;s pulse, curated in
             <span className="gradient-text">living color</span>.
           </h1>
           <div className="composer-row">

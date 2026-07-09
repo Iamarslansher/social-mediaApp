@@ -761,6 +761,62 @@ img {
   background: rgba(255, 255, 255, 0.15);
 }
 
+/* Post options dropdown ("...") — matches .nav-link hover language + glass-panel container */
+.post-menu {
+  min-width: 208px;
+  border-radius: 18px;
+  padding: 8px;
+  animation: floatIn 160ms ease both;
+}
+
+.post-menu ul {
+  display: grid;
+  gap: 4px;
+}
+
+.menu-item {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 650;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+
+.menu-item svg {
+  font-size: 16px;
+  color: var(--cyan);
+  flex: 0 0 auto;
+}
+
+.menu-item:hover {
+  transform: translateX(3px);
+  background: rgba(255, 255, 255, 0.11);
+  border-color: var(--line);
+}
+
+.menu-item-danger,
+.menu-item-danger svg {
+  color: var(--coral);
+}
+
+.menu-item-danger:hover {
+  background: rgba(255, 141, 122, 0.12);
+  border-color: rgba(255, 141, 122, 0.28);
+}
+
 .right-rail {
   position: sticky;
   top: 116px;

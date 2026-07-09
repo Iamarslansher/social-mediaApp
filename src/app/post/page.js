@@ -1,13 +1,30 @@
 // PostCard.js
 "use client";
 import React, { useState, useEffect } from "react";
-import { getFacebookProfile, getProfile, listenPosts } from "../config/fireBase";
+import {
+  getFacebookProfile,
+  getProfile,
+  listenPosts,
+} from "../config/fireBase";
 import { motion } from "framer-motion";
 
-import { FiHeart, FiMessageCircle, FiMoreHorizontal, FiSend } from "react-icons/fi";
+import {
+  FiHeart,
+  FiMessageCircle,
+  FiMoreHorizontal,
+  FiSend,
+  FiEyeOff,
+  FiBookmark,
+  FiRepeat,
+  FiLink,
+  FiBellOff,
+  FiFlag,
+  FiUserX,
+} from "react-icons/fi";
 
 const PostCard = () => {
   const [posts, setosts] = useState([]);
+  const [openMenu, setOpenMenu] = useState(null);
   const [profile, setProfile] = useState("");
   const [localProfile, setLocalProfile] = useState("");
 
@@ -40,7 +57,9 @@ const PostCard = () => {
             <p className="rail-muted">
               Create a post to turn this feed into a living timeline.
             </p>
-            <a className="primary-button" href="/addPost">Create post</a>
+            <a className="primary-button" href="/addPost">
+              Create post
+            </a>
           </div>
         </div>
       ) : (
@@ -51,7 +70,10 @@ const PostCard = () => {
               key={post.id || index}
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.18) }}
+              transition={{
+                duration: 0.35,
+                delay: Math.min(index * 0.04, 0.18),
+              }}
             >
               <div className="post-header">
                 <div className="post-author">
@@ -66,13 +88,78 @@ const PostCard = () => {
                     alt="Post author"
                   />
                   <div>
-                    <strong>{post.authorName || profile[0]?.name || "Luma Creator"}</strong>
+                    <strong>
+                      {post.authorName || profile[0]?.name || "Luma Creator"}
+                    </strong>
                     <span>{post.privacy || "Public"} spark</span>
                   </div>
                 </div>
-                <button className="icon-button" aria-label="More post options">
-                  <FiMoreHorizontal />
-                </button>
+                <div style={{ position: "relative" }}>
+                  <button
+                    className="icon-button"
+                    aria-label="More post options"
+                    onClick={() =>
+                      setOpenMenu(openMenu === index ? null : index)
+                    }
+                  >
+                    <FiMoreHorizontal />
+                  </button>
+                  {openMenu === index && (
+                    <div
+                      className="post-menu glass-panel"
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        top: "2.4rem",
+                        zIndex: 30,
+                      }}
+                    >
+                      <ul
+                        style={{
+                          listStyle: "none",
+                          margin: 0,
+                          padding: "8px 0",
+                        }}
+                      >
+                        <li>
+                          <button className="menu-item">
+                            <FiEyeOff /> Hide
+                          </button>
+                        </li>
+                        <li>
+                          <button className="menu-item">
+                            <FiBookmark /> Save
+                          </button>
+                        </li>
+                        <li>
+                          <button className="menu-item">
+                            <FiRepeat /> Repost
+                          </button>
+                        </li>
+                        <li>
+                          <button className="menu-item">
+                            <FiLink /> Copy link
+                          </button>
+                        </li>
+                        <li>
+                          <button className="menu-item">
+                            <FiBellOff /> Turn off notifications
+                          </button>
+                        </li>
+                        <li>
+                          <button className="menu-item">
+                            <FiUserX /> Unfollow
+                          </button>
+                        </li>
+                        <li>
+                          <button className="menu-item menu-item-danger">
+                            <FiFlag /> Report
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="post-media">
                 {post.media?.[0]?.type === "video" ? (
