@@ -17,6 +17,7 @@ import { IoSettings } from "react-icons/io5";
 import { MdHelpOutline, MdMessage } from "react-icons/md";
 import { IoMdLogOut, IoMdNotificationsOutline } from "react-icons/io";
 import { FiActivity } from "react-icons/fi";
+// import logo from "../../public/logo.png";
 
 const SideBar = () => {
   const router = useRouter();

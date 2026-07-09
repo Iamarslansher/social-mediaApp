@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { useState } from "react";
 import { signUp } from "../config/fireBase";
@@ -13,17 +13,12 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // const notify = (message) =>
-  //   toast(message, {
-  //     position: "top-right",
-  //     autoClose: 5000,
-  //     hideProgressBar: false,
-  //     closeOnClick: true,
-  //     pauseOnHover: true,
-  //     draggable: true,
-  //     progress: undefined,
-  //     theme: "dark",
-  //   });
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      router.push("/mainDashboard");
+    }
+  }, []);
 
   const SignUpFunc = async (e) => {
     e.preventDefault();
@@ -33,8 +28,6 @@ function Signup() {
         return;
       }
       await signUp({ name, email, password }, router);
-      // successToast("Account created successfully!");
-      // router.push("/mainDashboard");
     } catch (error) {
       errorToast(error.message);
     }

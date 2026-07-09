@@ -25,7 +25,12 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { uploadToCloudinary } from "../lib/cloudinary";
-import { successToast, errorToast } from "@/utils/toast";
+import {
+  successToast,
+  errorToast,
+  loadingToast,
+  updateToast,
+} from "@/utils/toast";
 
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -195,8 +200,9 @@ const getCurrentUserProfile = async () => {
 // Add-Post in firebase
 export async function userCardItem(itemInfo) {
   try {
+    const id = loadingToast("Uploading Post...");
+    const postId = `LUMA-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     const { files = [], des, privacy = "Public", richText = "" } = itemInfo;
-
     const currentUser = await getCurrentUserProfile();
 
     const uploads = await Promise.all(
@@ -205,22 +211,35 @@ export async function userCardItem(itemInfo) {
       }),
     );
 
-    await addDoc(collection(db, "userItem"), {
+    const userID =
+      JSON.parse(localStorage.getItem("user"))?.uid || currentUser?.uid;
+    await setDoc(doc(db, "posts", userID), {
+      postId,
       description: des,
       richText,
       privacy,
       media: uploads,
       image: uploads[0]?.url || "",
-      authorId: currentUser?.uid || auth.currentUser?.uid || "",
+      authorId: userID,
       authorName: currentUser?.name || "Luma Creator",
       authorPhoto: currentUser?.photo || fallbackAvatar,
       createdAt: serverTimestamp(),
     });
-
-    alert("Post published successfully!");
+    updateToast(id, "Uploaded Successfully");
+    // await addDoc(collection(db, "userItem"), {
+    //   description: des,
+    //   richText,
+    //   privacy,
+    //   media: uploads,
+    //   image: uploads[0]?.url || "",
+    //   authorId: currentUser?.uid || auth.currentUser?.uid || "",
+    //   authorName: currentUser?.name || "Luma Creator",
+    //   authorPhoto: currentUser?.photo || fallbackAvatar,
+    //   createdAt: serverTimestamp(),
+    // });
+    // successToast("Post published successfully!");
   } catch (error) {
-    console.error(error);
-    alert(error.message);
+    errorToast(error.message);
   }
 }
 
