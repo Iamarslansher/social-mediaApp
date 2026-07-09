@@ -198,7 +198,7 @@ const getCurrentUserProfile = async () => {
 };
 
 // Add-Post in firebase
-export async function userCardItem(itemInfo) {
+export async function userCardItem(itemInfo, router) {
   try {
     const id = loadingToast("Uploading Post...");
     const postId = `LUMA-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
@@ -226,18 +226,7 @@ export async function userCardItem(itemInfo) {
       createdAt: serverTimestamp(),
     });
     updateToast(id, "Uploaded Successfully");
-    // await addDoc(collection(db, "userItem"), {
-    //   description: des,
-    //   richText,
-    //   privacy,
-    //   media: uploads,
-    //   image: uploads[0]?.url || "",
-    //   authorId: currentUser?.uid || auth.currentUser?.uid || "",
-    //   authorName: currentUser?.name || "Luma Creator",
-    //   authorPhoto: currentUser?.photo || fallbackAvatar,
-    //   createdAt: serverTimestamp(),
-    // });
-    // successToast("Post published successfully!");
+    router.push("/mainDashboard");
   } catch (error) {
     errorToast(error.message);
   }

@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { userCardItem } from "../config/fireBase";
 import {
@@ -21,6 +22,7 @@ const emojis = ["✨", "🔥", "💡", "📸", "🎧", "🌙", "🚀", "💬", "
 const maxCharacters = 280;
 
 const AddPost = () => {
+  const router = useRouter();
   const [files, setFiles] = useState([]);
   const [des, setdes] = useState("");
   const [privacy, setPrivacy] = useState("Public");
@@ -36,7 +38,7 @@ const AddPost = () => {
         url: URL.createObjectURL(file),
         type: file.type.startsWith("video") ? "video" : "image",
       })),
-    [files]
+    [files],
   );
 
   const addFiles = (selectedFiles) => {
@@ -44,12 +46,15 @@ const AddPost = () => {
   };
 
   const addItem = async () => {
-    await userCardItem({
-      files,
-      des,
-      privacy,
-      richText: `${bold ? "bold " : ""}${italic ? "italic " : ""}`.trim(),
-    });
+    await userCardItem(
+      {
+        files,
+        des,
+        privacy,
+        richText: `${bold ? "bold " : ""}${italic ? "italic " : ""}`.trim(),
+      },
+      router,
+    );
     setFiles([]);
     setdes("");
   };
@@ -77,7 +82,8 @@ const AddPost = () => {
               Compose a <span className="gradient-text">visual spark</span>
             </h1>
             <p className="rail-muted">
-              Add multiple images, video, emoji, privacy, and a polished caption.
+              Add multiple images, video, emoji, privacy, and a polished
+              caption.
             </p>
           </div>
           <select
@@ -137,7 +143,13 @@ const AddPost = () => {
                 <FiItalic /> Italic
               </button>
               <button className="ghost-button" type="button">
-                {privacy === "Public" ? <FiZap /> : privacy === "Friends" ? <FiUsers /> : <FiLock />}
+                {privacy === "Public" ? (
+                  <FiZap />
+                ) : privacy === "Friends" ? (
+                  <FiUsers />
+                ) : (
+                  <FiLock />
+                )}
                 {privacy}
               </button>
             </div>
@@ -153,8 +165,13 @@ const AddPost = () => {
               }}
             />
             <div className="counter">
-              <span>{files.length} media item{files.length === 1 ? "" : "s"} selected</span>
-              <span>{des.length}/{maxCharacters}</span>
+              <span>
+                {files.length} media item{files.length === 1 ? "" : "s"}{" "}
+                selected
+              </span>
+              <span>
+                {des.length}/{maxCharacters}
+              </span>
             </div>
             <div className="emoji-picker" aria-label="Emoji picker">
               <FiSmile />
@@ -183,10 +200,18 @@ const AddPost = () => {
               </div>
             )}
             <div className="quick-actions">
-              <button className="secondary-button" type="button" onClick={() => fileInputRef.current?.click()}>
+              <button
+                className="secondary-button"
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <FiImage /> Add media
               </button>
-              <button className="secondary-button" type="button" onClick={() => fileInputRef.current?.click()}>
+              <button
+                className="secondary-button"
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <FiVideo /> Add video
               </button>
               <button onClick={addItem} className="primary-button">
