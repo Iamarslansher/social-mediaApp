@@ -168,18 +168,6 @@ const PostCard = () => {
                 </div>
               </div>
               <div className="post-media">
-                {/* {post.media?.[0]?.type === "video" ? (
-                  <video controls src={post.media[0].url} />
-                ) : (
-                  <img
-                    src={
-                      post.image ||
-                      post.media?.[0]?.url ||
-                      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80"
-                    }
-                    alt={post.description || "Shared post"}
-                  />
-                )} */}
                 <Swiper
                   modules={[Navigation, Pagination]}
                   navigation
