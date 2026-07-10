@@ -7,7 +7,6 @@ import {
   listenPosts,
 } from "../config/fireBase";
 import { motion } from "framer-motion";
-
 import {
   FiHeart,
   FiMessageCircle,
@@ -21,6 +20,13 @@ import {
   FiFlag,
   FiUserX,
 } from "react-icons/fi";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const PostCard = () => {
   const [posts, setosts] = useState([]);
@@ -162,7 +168,7 @@ const PostCard = () => {
                 </div>
               </div>
               <div className="post-media">
-                {post.media?.[0]?.type === "video" ? (
+                {/* {post.media?.[0]?.type === "video" ? (
                   <video controls src={post.media[0].url} />
                 ) : (
                   <img
@@ -173,7 +179,27 @@ const PostCard = () => {
                     }
                     alt={post.description || "Shared post"}
                   />
-                )}
+                )} */}
+                <Swiper
+                  modules={[Navigation, Pagination]}
+                  navigation
+                  pagination={{ clickable: true }}
+                  spaceBetween={10}
+                  slidesPerView={1}
+                  className="swiper"
+                >
+                  {post.media.map((item, index) => (
+                    <SwiperSlide key={index} className="swiper-slide">
+                      {item.type === "video" ? (
+                        <video controls>
+                          <source src={item.url} />
+                        </video>
+                      ) : (
+                        <img src={item.url} alt="" />
+                      )}
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               </div>
               {post.media?.length > 1 && (
                 <div className="media-count">+{post.media.length - 1} more</div>
