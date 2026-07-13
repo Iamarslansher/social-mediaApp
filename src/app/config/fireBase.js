@@ -175,12 +175,11 @@ const getCurrentUserProfile = async () => {
   if (userSnap.exists()) {
     return { id: userSnap.id, ...userSnap.data() };
   }
+  // console.log(currentUser, "< - currentUser");
   const profile = {
     uid: currentUser.uid,
     name:
-      currentUser.displayName ||
-      currentUser.email?.split("@")[0] ||
-      "Luma Creator",
+      currentUser.name || currentUser.email?.split("@")[0] || "Luma Creator",
     email: currentUser.email || "",
     photo: currentUser.photoURL || fallbackAvatar,
     bio: "Building a luminous social presence.",
@@ -252,8 +251,10 @@ export async function getingAds() {
 // DAYNAMIC_UPDATE
 
 export async function updateprofile(itemInfo) {
-  console.log(itemInfo);
   try {
+    console.log(itemInfo, "<-itemInfo");
+
+    const id = loadingToast("Updating profile...");
     const { updateProfile, bio, skills = [], interests = [] } = itemInfo;
     let imgUrl = "";
 
@@ -262,6 +263,9 @@ export async function updateprofile(itemInfo) {
     }
 
     const currentUser = auth.currentUser;
+    console.log(itemInfo, "<-itemInfo");
+    console.log(currentUser, "<-currentUser");
+
     if (currentUser) {
       await setDoc(
         doc(db, "users", currentUser.uid),
@@ -275,12 +279,12 @@ export async function updateprofile(itemInfo) {
         { merge: true },
       );
     }
-    await addDoc(collection(db, "profile"), {
-      image: imgUrl || fallbackAvatar,
-    });
-    alert("Update Profile successfully!");
+    // await addDoc(collection(db, "profile"), {
+    //   image: imgUrl || fallbackAvatar,
+    // });
+    updateToast(id, "Profile updated successfully!");
   } catch (e) {
-    alert(e.message);
+    errorToast("Failed to update profile.");
   }
 }
 

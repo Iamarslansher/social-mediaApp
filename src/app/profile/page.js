@@ -28,6 +28,8 @@ const tabs = [
   ["About", FiInfo],
 ];
 
+import { errorToast } from "@/utils/toast";
+
 const Profile = () => {
   const [updateProfile, setUpdateProfile] = useState("");
   const [profile, setProfile] = useState(null);
@@ -36,7 +38,9 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("Posts");
   const [bio, setBio] = useState("");
   const [skills, setSkills] = useState("Design, Storytelling, Community");
-  const [interests, setInterests] = useState("Photography, Music, Creative tech");
+  const [interests, setInterests] = useState(
+    "Photography, Music, Creative tech",
+  );
 
   useEffect(() => {
     getCurrentProfile().then((current) => {
@@ -55,23 +59,34 @@ const Profile = () => {
 
   const myPosts = useMemo(
     () => posts.filter((post) => post.authorId === auth.currentUser?.uid),
-    [posts]
+    [posts],
   );
 
   const friends = useMemo(
     () => users.filter((user) => profile?.friends?.includes(user.uid)),
-    [users, profile]
+    [users, profile],
   );
 
   const profileUpdate = async () => {
-    await updateprofile({
-      updateProfile,
-      bio,
-      skills: skills.split(",").map((item) => item.trim()).filter(Boolean),
-      interests: interests.split(",").map((item) => item.trim()).filter(Boolean),
-    });
-    const current = await getCurrentProfile();
-    setProfile(current);
+    try {
+      await updateprofile({
+        updateProfile,
+        bio,
+        skills: skills
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean),
+        interests: interests
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean),
+      });
+      const current = await getCurrentProfile();
+      console.log(current, "current user");
+      setProfile(current);
+    } catch (error) {
+      errorToast("Failed to update profile.");
+    }
   };
 
   const statItems = [
@@ -80,7 +95,7 @@ const Profile = () => {
     ["Following", profile?.following?.length || 0],
     ["Friends", profile?.friends?.length || 0],
   ];
-
+  // console.log(myPosts, "<-myPosts");
   return (
     <main className="profile-page premium-page">
       <motion.section
@@ -155,7 +170,9 @@ const Profile = () => {
             ) : (
               <article className="timeline-card">
                 <strong>No posts yet</strong>
-                <p className="rail-muted">Your recent posts will appear here.</p>
+                <p className="rail-muted">
+                  Your recent posts will appear here.
+                </p>
               </article>
             )}
           </div>
@@ -181,8 +198,14 @@ const Profile = () => {
               friends.map((friend) => (
                 <article className="people-card" key={friend.uid}>
                   <div className="people-card-header">
-                    <span className={`status-dot ${friend.online ? "online" : ""}`} />
-                    <img className="avatar" src={friend.photo} alt={friend.name} />
+                    <span
+                      className={`status-dot ${friend.online ? "online" : ""}`}
+                    />
+                    <img
+                      className="avatar"
+                      src={friend.photo}
+                      alt={friend.name}
+                    />
                     <div>
                       <strong>{friend.name}</strong>
                       <div className="rail-muted">Mutual creator</div>
@@ -193,7 +216,9 @@ const Profile = () => {
             ) : (
               <article className="timeline-card">
                 <strong>No friends yet</strong>
-                <p className="rail-muted">Accepted friend requests will show here.</p>
+                <p className="rail-muted">
+                  Accepted friend requests will show here.
+                </p>
               </article>
             )}
           </div>
