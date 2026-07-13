@@ -43,12 +43,7 @@ const Profile = () => {
   );
 
   useEffect(() => {
-    getCurrentProfile().then((current) => {
-      setProfile(current);
-      setBio(current?.bio || "");
-      setSkills((current?.skills || []).join(", "));
-      setInterests((current?.interests || []).join(", "));
-    });
+    getingProfile();
     const unsubscribeUsers = listenUsers(setUsers);
     const unsubscribePosts = listenPosts(setPosts);
     return () => {
@@ -56,6 +51,18 @@ const Profile = () => {
       unsubscribePosts();
     };
   }, []);
+
+  const getingProfile = async () => {
+    try {
+      const current = await getCurrentProfile();
+      setProfile(current);
+      setBio(current?.bio || "");
+      setSkills((current?.skills || []).join(", "));
+      setInterests((current?.interests || []).join(", "));
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
 
   const myPosts = useMemo(
     () => posts.filter((post) => post.authorId === auth.currentUser?.uid),

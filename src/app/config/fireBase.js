@@ -166,35 +166,36 @@ export const logout = async (router) => {
   }
 };
 
-// current User profile
-const getCurrentUserProfile = async () => {
-  const currentUser = auth.currentUser;
-  if (!currentUser) return null;
-  const userRef = doc(db, "users", currentUser.uid);
-  const userSnap = await getDoc(userRef);
-  if (userSnap.exists()) {
-    return { id: userSnap.id, ...userSnap.data() };
-  }
-  // console.log(currentUser, "< - currentUser");
-  const profile = {
-    uid: currentUser.uid,
-    name:
-      currentUser.name || currentUser.email?.split("@")[0] || "Luma Creator",
-    email: currentUser.email || "",
-    photo: currentUser.photoURL || fallbackAvatar,
-    bio: "Building a luminous social presence.",
-    skills: ["Design", "Community", "Storytelling"],
-    interests: ["Photography", "Creative tech", "Culture"],
-    followers: [],
-    following: [],
-    friends: [],
-    online: true,
-    lastActive: serverTimestamp(),
-    createdAt: serverTimestamp(),
-  };
-  await setDoc(userRef, profile, { merge: true });
-  return { id: currentUser.uid, ...profile };
-};
+// current User profile == duplicate of getCurrentUserProfile
+// const getCurrentUserProfile = async () => {
+
+//   const currentUser = auth.currentUser;
+//   if (!currentUser) return null;
+//   const userRef = doc(db, "users", currentUser.uid);
+//   const userSnap = await getDoc(userRef);
+//   if (userSnap.exists()) {
+//     console.log(userSnap.data(), "<-userSnap");
+//     return { id: userSnap.id, ...userSnap.data() };
+//   }
+//   const profile = {
+//     uid: currentUser.uid,
+//     name:
+//       currentUser.name || currentUser.email?.split("@")[0] || "Luma Creator",
+//     email: currentUser.email || "",
+//     photo: currentUser.photoURL || fallbackAvatar,
+//     bio: "Building a luminous social presence.",
+//     skills: ["Design", "Community", "Storytelling"],
+//     interests: ["Photography", "Creative tech", "Culture"],
+//     followers: [],
+//     following: [],
+//     friends: [],
+//     online: true,
+//     lastActive: serverTimestamp(),
+//     createdAt: serverTimestamp(),
+//   };
+//   await setDoc(userRef, profile, { merge: true });
+//   return { id: currentUser.uid, ...profile };
+// };
 
 // Add-Post in firebase
 export async function userCardItem(itemInfo, router) {
@@ -252,8 +253,6 @@ export async function getingAds() {
 
 export async function updateprofile(itemInfo) {
   try {
-    console.log(itemInfo, "<-itemInfo");
-
     const id = loadingToast("Updating profile...");
     const { updateProfile, bio, skills = [], interests = [] } = itemInfo;
     let imgUrl = "";
@@ -263,8 +262,6 @@ export async function updateprofile(itemInfo) {
     }
 
     const currentUser = auth.currentUser;
-    console.log(itemInfo, "<-itemInfo");
-    console.log(currentUser, "<-currentUser");
 
     if (currentUser) {
       await setDoc(
@@ -279,28 +276,12 @@ export async function updateprofile(itemInfo) {
         { merge: true },
       );
     }
-    // await addDoc(collection(db, "profile"), {
-    //   image: imgUrl || fallbackAvatar,
-    // });
+
     updateToast(id, "Profile updated successfully!");
   } catch (e) {
     errorToast("Failed to update profile.");
   }
 }
-
-// get profile
-export async function getProfile() {
-  const querySnapshot = await getDocs(collection(db, "profile"));
-  const ads = [];
-  querySnapshot.forEach((doc) => {
-    const ad = doc.data();
-    ad.id = doc.id;
-    ads.push(ad);
-  });
-  return ads;
-}
-
-// FACEBOOK-PROFIE
 
 // get Post from firebase
 export async function getFacebookProfile() {
@@ -314,8 +295,34 @@ export async function getFacebookProfile() {
   return allData;
 }
 
+// get profile
+
 export async function getCurrentProfile() {
-  return getCurrentUserProfile();
+  const userId = JSON.parse(localStorage.getItem("user"))?.uid;
+  if (!userId) return null;
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    return { id: userSnap.id, ...userSnap.data() };
+  }
+  const profile = {
+    uid: userId,
+    name:
+      currentUser.name || currentUser.email?.split("@")[0] || "Luma Creator",
+    email: currentUser.email || "",
+    photo: currentUser.photoURL || fallbackAvatar,
+    bio: "Building a luminous social presence.",
+    skills: ["Design", "Community", "Storytelling"],
+    interests: ["Photography", "Creative tech", "Culture"],
+    followers: [],
+    following: [],
+    friends: [],
+    online: true,
+    lastActive: serverTimestamp(),
+    createdAt: serverTimestamp(),
+  };
+  await setDoc(userRef, profile, { merge: true });
+  return { id: currentUser.uid, ...profile };
 }
 
 export function listenUsers(callback) {
