@@ -10,28 +10,25 @@ import {
 } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getProfile, logout } from "../config/fireBase";
+import { logout } from "../config/fireBase";
 
 import { CiBookmarkPlus } from "react-icons/ci";
 import { IoSettings } from "react-icons/io5";
 import { MdHelpOutline, MdMessage } from "react-icons/md";
 import { IoMdLogOut, IoMdNotificationsOutline } from "react-icons/io";
 import { FiActivity } from "react-icons/fi";
-// import logo from "../../public/logo.png";
 
 const SideBar = () => {
+  const fallBackImage =
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80";
   const router = useRouter();
   const [profile, setProfile] = useState([]);
 
   useEffect(() => {
-    getProfileFirebase();
+    const storedProfile = JSON.parse(localStorage.getItem("user"))?.photo;
+    console.log(storedProfile, "stored profile");
+    setProfile(storedProfile);
   }, []);
-
-  const getProfileFirebase = async () => {
-    const pfile = await getProfile();
-    setProfile(pfile);
-    // console.log(pfile);
-  };
 
   return (
     <aside className="sidebar glass-panel">
@@ -44,14 +41,7 @@ const SideBar = () => {
         </div>
       </Link>
       <Link href="/profile" className="profile-chip">
-        <img
-          className="avatar"
-          src={
-            profile[0]?.image ||
-            "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80"
-          }
-          alt="Profile"
-        />
+        <img className="avatar" src={profile || fallBackImage} alt="Profile" />
         <div>
           <strong>Your studio</strong>
           <span>Update profile</span>

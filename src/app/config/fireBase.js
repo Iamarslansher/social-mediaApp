@@ -83,7 +83,12 @@ export async function signUp(userInfo, router) {
 
     localStorage.setItem(
       "user",
-      JSON.stringify({ uid: credentials.user.uid, name, email }),
+      JSON.stringify({
+        uid: credentials.user.uid,
+        name,
+        email,
+        photo: fallbackAvatar,
+      }),
     );
     successToast("Account created successfully!");
     router.push("/mainDashboard");
@@ -97,12 +102,15 @@ export async function logIn(userInfo, router) {
   const { email, password } = userInfo;
   try {
     const user = await signInWithEmailAndPassword(auth, email, password);
+    console.log(user, "user");
+    // return;
     localStorage.setItem(
       "user",
       JSON.stringify({
         uid: user.user.uid,
         email: user.user.email,
         name: user.user.displayName,
+        photo: user.user.photoURL || fallbackAvatar,
       }),
     );
     successToast("Logged in successfully!");
@@ -166,76 +174,6 @@ export const logout = async (router) => {
   }
 };
 
-// current User profile == duplicate of getCurrentUserProfile
-// const getCurrentUserProfile = async () => {
-
-//   const currentUser = auth.currentUser;
-//   if (!currentUser) return null;
-//   const userRef = doc(db, "users", currentUser.uid);
-//   const userSnap = await getDoc(userRef);
-//   if (userSnap.exists()) {
-//     console.log(userSnap.data(), "<-userSnap");
-//     return { id: userSnap.id, ...userSnap.data() };
-//   }
-//   const profile = {
-//     uid: currentUser.uid,
-//     name:
-//       currentUser.name || currentUser.email?.split("@")[0] || "Luma Creator",
-//     email: currentUser.email || "",
-//     photo: currentUser.photoURL || fallbackAvatar,
-//     bio: "Building a luminous social presence.",
-//     skills: ["Design", "Community", "Storytelling"],
-//     interests: ["Photography", "Creative tech", "Culture"],
-//     followers: [],
-//     following: [],
-//     friends: [],
-//     online: true,
-//     lastActive: serverTimestamp(),
-//     createdAt: serverTimestamp(),
-//   };
-//   await setDoc(userRef, profile, { merge: true });
-//   return { id: currentUser.uid, ...profile };
-// };
-
-// Add-Post in firebase
-export async function userCardItem(itemInfo, router) {
-  try {
-    const id = loadingToast("Uploading Post...");
-    const postId = `LUMA-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    const { files = [], des, privacy = "Public", richText = "" } = itemInfo;
-    const currentUser = await getCurrentUserProfile();
-
-    const uploads = await Promise.all(
-      files.map(async (file) => {
-        return await uploadToCloudinary(file);
-      }),
-    );
-
-    const userID =
-      JSON.parse(localStorage.getItem("user"))?.uid || currentUser?.uid;
-    await setDoc(doc(db, "posts", postId), {
-      postId,
-      description: des,
-      richText,
-      privacy,
-      media: uploads,
-      image: uploads[0]?.url || "",
-      authorId: userID,
-      authorName: currentUser?.name || "Luma Creator",
-      authorPhoto: currentUser?.photo || fallbackAvatar,
-      createdAt: serverTimestamp(),
-      likes: [],
-      commentsCount: 0,
-      sharesCount: 0,
-      updatedAt: serverTimestamp(),
-    });
-    updateToast(id, "Uploaded Successfully");
-    router.push("/mainDashboard");
-  } catch (error) {
-    errorToast(error.message);
-  }
-}
-
 // get Post from firebase
 export async function getingAds() {
   const querySnapshot = await getDocs(collection(db, "userItem"));
@@ -249,8 +187,6 @@ export async function getingAds() {
 }
 
 // Update Profile
-// DAYNAMIC_UPDATE
-
 export async function updateprofile(itemInfo) {
   try {
     const id = loadingToast("Updating profile...");
@@ -283,7 +219,7 @@ export async function updateprofile(itemInfo) {
   }
 }
 
-// get Post from firebase
+// get Post from firebase according facebook login
 export async function getFacebookProfile() {
   const querySnapshot = await getDocs(collection(db, "facebookloginuser"));
   const allData = [];
@@ -294,9 +230,7 @@ export async function getFacebookProfile() {
   });
   return allData;
 }
-
 // get profile
-
 export async function getCurrentProfile() {
   const userId = JSON.parse(localStorage.getItem("user"))?.uid;
   if (!userId) return null;

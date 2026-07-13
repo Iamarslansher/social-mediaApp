@@ -59,8 +59,10 @@ const Profile = () => {
       setBio(current?.bio || "");
       setSkills((current?.skills || []).join(", "));
       setInterests((current?.interests || []).join(", "));
+      // JSON.parse(localStorage.getItem("user"))
+      // localStorage.setItem("profile", JSON.stringify(current));
     } catch (error) {
-      console.error("Error fetching profile:", error);
+      errorToast("Error fetching profile:");
     }
   };
 
@@ -89,7 +91,6 @@ const Profile = () => {
           .filter(Boolean),
       });
       const current = await getCurrentProfile();
-      console.log(current, "current user");
       setProfile(current);
     } catch (error) {
       errorToast("Failed to update profile.");

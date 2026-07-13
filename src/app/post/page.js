@@ -1,11 +1,7 @@
 // PostCard.js
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  getFacebookProfile,
-  getProfile,
-  listenPosts,
-} from "../config/fireBase";
+import { getFacebookProfile, listenPosts } from "../config/fireBase";
 import { motion } from "framer-motion";
 import {
   FiHeart,
@@ -34,12 +30,12 @@ const PostCard = () => {
   const [profile, setProfile] = useState("");
   const [localProfile, setLocalProfile] = useState("");
 
-  useEffect(() => {
-    getPrfile();
-    LocalProfile();
-    const unsubscribe = listenPosts(setosts);
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   getPrfile();
+  //   LocalProfile();
+  //   const unsubscribe = listenPosts(setosts);
+  //   return () => unsubscribe();
+  // }, []);
 
   const getPrfile = async () => {
     const pfile = await getFacebookProfile();
